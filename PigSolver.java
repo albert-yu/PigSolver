@@ -283,8 +283,6 @@ public class PigSolver
 			solver.wins();
 			System.out.println(String.format("%d iterations", solver.iterations));
 			System.out.println(solver.expectedWins[(solver.iterations) % 4][p1Score][p2Score]);
-
-			// System.out.println(target);
 		}
 	}
 }

@@ -72,7 +72,7 @@ public class PigSolver
 	{
 		System.out.println("");
 		System.out.println(String.format("Array at iteration %d", iteration));
-		// System.out.println(iteration % 4);
+
 		for (int i = 0; i < arraySize; i ++)
 		{	
 			System.out.println(Arrays.toString(expectedWins[iteration % 4][i]));
@@ -89,8 +89,9 @@ public class PigSolver
 
 	/**
 	 * Calculates the expected number of wins for player 1 when there are a given 
-	 * number of turns remaining
-	 * 
+	 * number of turns remaining.
+	 * Iteratively updates expectedWins[n][i][j] until convergence, i.e.
+	 * until expectedWins[n][i][j] = expectedWins[n-2][i][j] for all i, j
 	 */
 	public void wins()
 	{
@@ -130,12 +131,9 @@ public class PigSolver
 
 
 		iterations += 1;
-		// printArray(0);
 
 		while (!converged() && iterations < maxIterations)
 		{
-			// System.out.println("loop entered");
-			// System.out.println(iterations);
 			for (int i = 0; i < target; i ++)
 			{
 				for (int j = 0; j < target; j ++)
@@ -154,22 +152,36 @@ public class PigSolver
 				}
 			}
 
-
-			// printArray(iterations);
 			iterations ++;
 		}
 	}
 
 
+	/**
+	 * Determines if convergence has been reached.
+	 * @return true if converged, false otherwise
+	 */
 	private boolean converged()
 	{
 		// return (expectedWins[iterations % 4][p1Score][p2Score] == expectedWins[((iterations % 4 - 2) + 4) % 4][p1Score][p2Score] 
 		// 					&& expectedWins[iterations % 4][p1Score][p2Score] != null);
-
+		System.out.println(iterations);
 		for (int i = p1Score; i < target; i ++)
 		{
 			for (int j = p2Score; j < target; j ++)
 			{
+				// System.out.println(String.format("i = %d", i));
+				// System.out.println(String.format("j = %d", j));
+				// if (expectedWins[0][i][j] != null && expectedWins[2][i][j] != null)
+				// {
+				// 	double difference = expectedWins[0][i][j] - expectedWins[2][i][j];
+				// 	System.out.println(difference);
+				// 	if (difference != 0.0)
+				// 	{
+				// 		return false;
+				// 	}
+				// }
+
 				if (expectedWins[0][i][j] != expectedWins[2][i][j])
 				{
 					return false;
@@ -184,96 +196,60 @@ public class PigSolver
 
 		return true;
 
-
-		// if (expectedWins[0][p1Score][p2Score] == expectedWins[2][p1Score][p2Score])
-		// {
-		// 	return true;
-		// }
-
-		// else if (expectedWins[1][p1Score][p2Score] == expectedWins[3][p1Score][p2Score])
-		// {
-		// 	return true;
-		// }
-
-		// return false;
-
 	}
 
 
 	/**
-	 * If n is odd, computes expectedWins[n][i][j]. Also updates turnTotal.
+	 * If n is odd, computes expectedWins[n][i][j].
+	 * @param i, the index of Player 1 we are currently at
+	 * @param j, the index of Player 2 we are currently at
+	 * @param prob, the PigProbabilities object that contains the precomputed probabilities.
 	 */
 	private double winsOddCase(int i, int j, PigProbabilities prob)
 	{
-		// System.out.println("function winsOddCase called");
 		int upperBoundOnTurn = Math.max(2, (target - j));
-		// System.out.println(String.format("upperBoundOnTurn %d", upperBoundOnTurn));
 
 		double currentMin = 1.0;
 
 		for (int s = 2; s <= upperBoundOnTurn; s ++)
 		{
-			// System.out.println(String.format("s = %d", s));
-			// System.out.println("");
 			double reachOrExceed = 0.0; 
 
 			for (int m = s; m <= s + 5; m ++)
 			{
-				// System.out.println(String.format("i = %d", i));
-				// System.out.println(String.format("j = %d", j));
-				// System.out.println(String.format("m = %d", m));
 				reachOrExceed += expectedWins[(iterations - 1) % 4][i][j + m] * prob.pEndAt(s, m);
-				// System.out.print("reachOrExceed is ");
-				// System.out.println(reachOrExceed);
-				
 			}
 
 			double expectedResult = expectedWins[(iterations - 1) % 4][i][j] * prob.pEndAt(s, 0) + reachOrExceed; 
-			// System.out.println("");
-			// System.out.println("expectedResult");
-			// System.out.println(expectedResult);
 
 			if (expectedResult < currentMin)
 			{
 				currentMin = expectedResult;
-				// if (i == p1Score && j == p2Score)
-				// {
-				// 	turnTotal = s;
-				// }
 			}
 		}
 
-		// System.out.println(String.format("turnTotal: %d", turnTotal));
 		return currentMin;
 	}
 
 
 	/**
-	 * If n is even, computes expectedWins[n][i][j]. 
+	 * If n is even, computes expectedWins[n][i][j]. Also updates turnTotal.
+	 * @param i, the index of Player 1 we are currently at
+	 * @param j, the index of Player 2 we are currently at
+	 * @param prob, the PigProbabilities object that contains the precomputed probabilities.
 	 */
 	private double winsEvenCase(int i, int j, PigProbabilities prob)
 	{
-		// System.out.println("function winsEvenCase called");
-
 		int upperBoundOnTurn = Math.max(2, target - i);
-		// System.out.println("Upper bound is");
-		// System.out.println(upperBoundOnTurn);
 
 		double currentMax = 0.0;
 
 		for (int s = 2; s <= upperBoundOnTurn; s ++)
 		{
-			// System.out.println(String.format("s = %d", s));
-			// System.out.println("");
 			double reachOrExceed = 0.0; 
 			for (int n = s; n <= s + 5; n ++)
 			{
-				// System.out.println(String.format("i = %d", i));
-				// System.out.println(String.format("j = %d", j));
-				// System.out.println(String.format("n = %d", n));
 				reachOrExceed += expectedWins[(iterations - 1) % 4][i + n][j] * prob.pEndAt(s, n);
-				// System.out.println("reachOrExceed is");
-				// System.out.println(reachOrExceed);
 			}
 
 			double expectedResult = expectedWins[(iterations - 1) % 4][i][j] * prob.pEndAt(s, 0) + reachOrExceed; 
@@ -306,8 +282,6 @@ public class PigSolver
 			int p2Score = Integer.parseInt(args[2]);
 
 			PigSolver solver = new PigSolver(target, p1Score, p2Score);
-
-			// System.out.println(solver.iterations);
 
 			solver.wins();
 			System.out.println(String.format("%d iterations", solver.iterations));

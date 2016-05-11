@@ -31,10 +31,10 @@ public class PigProbabilities
      */
     public PigProbabilities(int gameTarget)
     {
-	if (gameTarget < 2)
-	    {
-		throw new IllegalArgumentException("game target must be at least 2: " + gameTarget);
-	    }
+    	if (gameTarget < 2)
+        {
+    		throw new IllegalArgumentException("game target must be at least 2: " + gameTarget);
+        }
 
         maxTarget = gameTarget;
 
@@ -55,16 +55,18 @@ public class PigProbabilities
             
             pEnd[i][0] = pReach[i];
 	        pEnd[i][6] = 1.0 - pEnd[i][0];
-	    for (int j = 1; j < 6; j++)
-		{
-		    for (int r = Math.min(6, i + j);
-			 r >= 2 && i + j - r < i && i + j - r >= 0;
-			 r--)
-			{
-			    pEnd[i][j] += pReach[i + j - r] / 6.0;
-			}
-		    pEnd[i][6] -= pEnd[i][j];
-		}
+
+    	    for (int j = 1; j < 6; j++)
+    		{
+    		    for (int r = Math.min(6, i + j);
+    			 r >= 2 && i + j - r < i && i + j - r >= 0;
+    			 r--)
+    			{
+    			    pEnd[i][j] += pReach[i + j - r] / 6.0;
+    			}
+                
+    		    pEnd[i][6] -= pEnd[i][j];
+    		}
         }
     }
 
@@ -78,40 +80,42 @@ public class PigProbabilities
      */
     public double pEndAt(int turnTarget, int endScore)
     {
-	if (turnTarget < 2)
-	    {
-		throw new IllegalArgumentException("turn target must be at least 2: " + turnTarget);
-	    }
-	if (turnTarget > maxTarget)
-	    {
-		throw new IllegalArgumentException("turn target must be no more than " + maxTarget + ": " + turnTarget);
-	    }
+    	if (turnTarget < 2)
+    	{
+    		throw new IllegalArgumentException("turn target must be at least 2: " + turnTarget);
+        }
 
-	if (endScore == 0)
+    	if (turnTarget > maxTarget)
 	    {
-		return pEnd[turnTarget][6];
-	    }
-	else if (endScore >= turnTarget && endScore <= turnTarget + 5)
-	    {
-		return pEnd[turnTarget][endScore - turnTarget];
-	    }
-	else
-	    {
-		// won't end turn < turnTarget or > turnTarget + 5
-		return 0.0;
-	    }
+    		throw new IllegalArgumentException("turn target must be no more than " + maxTarget + ": " + turnTarget);
+    	}
+
+    	if (endScore == 0)
+    	{
+    		return pEnd[turnTarget][6];
+        }
+
+    	else if (endScore >= turnTarget && endScore <= turnTarget + 5)
+    	{
+    		return pEnd[turnTarget][endScore - turnTarget];
+    	}
+    	else
+    	{
+    		// won't end turn < turnTarget or > turnTarget + 5
+    		return 0.0;
+    	}
     }
 
     public static void main(String[] args)
     {
-	int turnTarget = Integer.parseInt(args[0]);
+    	int turnTarget = Integer.parseInt(args[0]);
 
-	PigProbabilities p = new PigProbabilities(turnTarget);
-	System.out.printf("p(0) = %f%n", p.pEndAt(turnTarget, 0));
-	for (int i = 0; i <= 5; i++)
-	    {
-		System.out.printf("p(%d) = %f%n", turnTarget + i, p.pEndAt(turnTarget, turnTarget + i));
-	    }
+    	PigProbabilities p = new PigProbabilities(turnTarget);
+    	System.out.printf("p(0) = %f%n", p.pEndAt(turnTarget, 0));
+    	for (int i = 0; i <= 5; i++)
+    	{
+    		System.out.printf("p(%d) = %f%n", turnTarget + i, p.pEndAt(turnTarget, turnTarget + i));
+    	}
     }
 
 }

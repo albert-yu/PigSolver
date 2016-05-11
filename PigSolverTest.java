@@ -13,7 +13,7 @@ public class PigSolverTest
 			solver.setExpectedWins(i, sampleArray);
 		}
 
-		System.out.println(solver.converged());  // true
+		System.out.println(solver.converged());  // true (need to set this to public in PigSolver.java)
 		System.out.println(1.0000000000000001 == 1.0000000000000002);  // false
 		System.out.println(1.00000000000000001 == 1.00000000000000002);  // true
 

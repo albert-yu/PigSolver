@@ -163,34 +163,22 @@ public class PigSolver
 	 */
 	private boolean converged()
 	{
-		// return (expectedWins[iterations % 4][p1Score][p2Score] == expectedWins[((iterations % 4 - 2) + 4) % 4][p1Score][p2Score] 
-		// 					&& expectedWins[iterations % 4][p1Score][p2Score] != null);
-		System.out.println(iterations);
+
 		for (int i = p1Score; i < target; i ++)
 		{
 			for (int j = p2Score; j < target; j ++)
 			{
-				// System.out.println(String.format("i = %d", i));
-				// System.out.println(String.format("j = %d", j));
-				// if (expectedWins[0][i][j] != null && expectedWins[2][i][j] != null)
-				// {
-				// 	double difference = expectedWins[0][i][j] - expectedWins[2][i][j];
-				// 	System.out.println(difference);
-				// 	if (difference != 0.0)
-				// 	{
-				// 		return false;
-				// 	}
-				// }
 
-				if (expectedWins[0][i][j] != expectedWins[2][i][j])
+				if (expectedWins[0][i][j] == null || expectedWins[2][i][j] == null)
 				{
 					return false;
 				}
 
-				// else if (expectedWins[1][i][j] != expectedWins[3][i][j])
-				// {
-				// 	return false;
-				// }
+				else if (expectedWins[0][i][j] - expectedWins[2][i][j] > 0.0000000000000001)
+				{
+					return false;
+				}
+
 			}
 		}
 

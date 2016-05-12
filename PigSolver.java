@@ -163,18 +163,29 @@ public class PigSolver
      */
     private boolean converged()
     {
+        double errorTolerance = 0.00000000000000001;
 
         for (int i = p1Score; i < target; i ++)
         {
             for (int j = p2Score; j < target; j ++)
             {
 
-                if (expectedWins[0][i][j] == null || expectedWins[2][i][j] == null)
+                // if (expectedWins[0][i][j] == null || expectedWins[2][i][j] == null)
+                // {
+                //     return false;
+                // }
+
+                if (expectedWins[1][i][j] == null || expectedWins[3][i][j] == null)
                 {
                     return false;
                 }
 
-                else if (expectedWins[0][i][j] - expectedWins[2][i][j] > 0.0000000000000001)
+                // else if (Math.abs(expectedWins[0][i][j] - expectedWins[2][i][j]) > errorTolerance)
+                // {
+                //     return false;
+                // }
+
+                else if (Math.abs(expectedWins[1][i][j] - expectedWins[3][i][j]) > errorTolerance)
                 {
                     return false;
                 }
